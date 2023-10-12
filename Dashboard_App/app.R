@@ -7,7 +7,7 @@ library(shinydashboard)
 
 # UI
 ui <- dashboardPage(
-  dashboardHeader(),
+  dashboardHeader(title = "Scott Schumacker"),
   dashboardSidebar(),
   dashboardBody()
 )
