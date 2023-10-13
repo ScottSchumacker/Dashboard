@@ -6,6 +6,8 @@ library(shiny)
 library(shinydashboard)
 library(ggplot2)
 library(dplyr)
+library(tidyr)
+library(data.table)
 
 # UI
 ui <- dashboardPage(
@@ -30,11 +32,17 @@ ui <- dashboardPage(
 # Server
 server <- function(input, output) {
   
+  # Transforming the population data from wide format to long format
+  long <- melt(setDT(world_pop), id.vars = c("country"), variable.name = "year")
+  colnames(long) <- c("country", "year", "population")
+  
+  # Creating a reactive subset of data based on user input
   worldPlotData <- reactive({
     long %>% 
       filter(country == input$countryName)
   })
   
+  # Creating the population table
   output$popTable <- renderDataTable({
     worldPlotData()
   })
