@@ -11,7 +11,7 @@ library(data.table)
 
 # UI
 ui <- dashboardPage(
-  dashboardHeader(title = "Scott Schumacker D"),
+  dashboardHeader(title = "Scott Schumacker"),
   dashboardSidebar(
     sidebarMenu(
       menuItem("World Population", tabName = "worldPop", icon = icon("signal")),
@@ -25,7 +25,7 @@ ui <- dashboardPage(
           selectInput(inputId = "countryName", "Country",
                       choices = long$country)
         ),
-        dataTableOutput("popTable")
+        box(dataTableOutput("popTable"), height = "500px")
       )
     )
   )
@@ -44,7 +44,9 @@ server <- function(input, output) {
   # Creating the population table
   output$popTable <- renderDataTable({
     world_plot_data()
-  })
+  }, options = list(
+    pageLength = 10
+  ))
 }
 
 shinyApp(ui, server)
