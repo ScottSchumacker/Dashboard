@@ -11,7 +11,7 @@ library(data.table)
 
 # UI
 ui <- dashboardPage(
-  dashboardHeader(title = "Scott Schumacker"),
+  dashboardHeader(title = "Scott Schumacker D"),
   dashboardSidebar(
     sidebarMenu(
       menuItem("World Population", tabName = "worldPop", icon = icon("signal")),
