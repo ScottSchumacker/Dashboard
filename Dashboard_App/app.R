@@ -21,32 +21,30 @@ ui <- dashboardPage(
   dashboardBody(
     tabItems(
       tabItem(tabName = "worldPop",
-          box(title = "Controls",
-              selectInput(inputId = "countryName", "Country", choices = long$country)
-              ),
-          dataTableOutput("popTable")
+        box(title = "Controls",
+          selectInput(inputId = "countryName", "Country",
+                      choices = long$country)
+        ),
+        dataTableOutput("popTable")
+      )
     )
-  ))
+  )
 )
 
 # Server
 server <- function(input, output) {
-  
   # Transforming the population data from wide format to long format
   long <- melt(setDT(world_pop), id.vars = c("country"), variable.name = "year")
   colnames(long) <- c("country", "year", "population")
-  
   # Creating a reactive subset of data based on user input
-  worldPlotData <- reactive({
-    long %>% 
+  world_plot_data <- reactive({
+    long %>%
       filter(country == input$countryName)
   })
-  
   # Creating the population table
   output$popTable <- renderDataTable({
-    worldPlotData()
+    world_plot_data()
   })
-  
 }
 
 shinyApp(ui, server)
