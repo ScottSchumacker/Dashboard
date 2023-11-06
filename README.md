@@ -1,2 +1,2 @@
 # Dashboard
-An RShiny dashboard to showcase different visualizations
+An R Shiny dashboard of various data visualization
