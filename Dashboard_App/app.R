@@ -13,6 +13,7 @@ library(plotly)
 # UI
 ui <- dashboardPage(
   dashboardHeader(title = "Scott Schumacker"),
+  # Sidebar
   dashboardSidebar(
     sidebarMenu(
       menuItem("World Population", tabName = "worldPop", icon = icon("signal")),
@@ -20,6 +21,7 @@ ui <- dashboardPage(
       menuItem("Widgets", tabName = "widgets", icon = icon("th"))
     )
   ),
+  # Body
   dashboardBody(
     tabItems(
       tabItem(tabName = "worldPop",
@@ -39,7 +41,7 @@ ui <- dashboardPage(
 
 # Server
 server <- function(input, output) {
-  # Loading in Netflix Dataset
+  # Loading in Netflix Data set
   # Processing Netflix data for top ten visualization
   country_table <- netflix_titles %>% 
     group_by(country) %>% 
@@ -49,11 +51,13 @@ server <- function(input, output) {
   
   colnames(country_table) <- c("Country", "Releases")
   country_table$Country <- as.factor(country_table$Country)
+  
   top10 <- ggplot(data = country_table, aes(x = Country, y = Releases)) +
     geom_bar(stat = "identity", fill = "red", color = "black", alpha = 0.7)
   top10
   top10_interactive <- ggplotly(top10)
   output$top_ten_out <- renderPlotly(top10_interactive)
+  
   # Transforming the population data from wide format to long format
   long <- melt(setDT(world_pop), id.vars = c("country"), variable.name = "year")
   colnames(long) <- c("country", "year", "population")
@@ -62,6 +66,7 @@ server <- function(input, output) {
     long %>%
       filter(country == input$countryName)
   })
+  
   # Creating the population table
   output$popTable <- renderDataTable({
     world_plot_data()
