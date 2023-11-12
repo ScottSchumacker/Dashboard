@@ -50,10 +50,9 @@ server <- function(input, output) {
   colnames(country_table) <- c("Country", "Releases")
   country_table$Country <- as.factor(country_table$Country)
   top10 <- ggplot(data = country_table, aes(x = Country, y = Releases)) +
-    geom_bar(stat = "identity", fill = "red", color = "black", alpha = 0.7) +
-    ggtitle("test")
+    geom_bar(stat = "identity", fill = "red", color = "black", alpha = 0.7)
   top10
-  top10_interactive <- ggplotly(p)
+  top10_interactive <- ggplotly(top10)
   output$top_ten_out <- renderPlotly(top10_interactive)
   # Transforming the population data from wide format to long format
   long <- melt(setDT(world_pop), id.vars = c("country"), variable.name = "year")
