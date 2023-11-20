@@ -24,16 +24,10 @@ ui <- dashboardPage(
   # Body
   dashboardBody(
     tabItems(
-      tabItem(tabName = "worldPop",
-        box(title = "Controls",
-          selectInput(inputId = "countryName", "Country",
-                      choices = long$country)
-        ),
-        box(dataTableOutput("popTable"), height = "500px")
-      ),
       tabItem(tabName = "netflix",
-        box(plotlyOutput("top_ten_out"), width = "100%", title = "Top Ten Countr
-            ies by Number of Releases (2014-2021)")
+        box(plotlyOutput("topTenOut"), width = "100%", title = "Top Ten Countr
+            ies by Number of Releases (2008-2021)"),
+        box(plotOutput("releaseTime"))
       )
     )
   )
@@ -41,32 +35,42 @@ ui <- dashboardPage(
 
 # Server
 server <- function(input, output) {
-  # Loading in Netflix Data set
+  # Loading in Netflix Data set (add code)
+  netflixTitles <- netflix_titles3
+  # Extracting only the year
+  netflixTitles$dateadded <- substr(netflixTitles$date_added, 1, 4)
+  # Cleaning Netflix data set (add code)
   # Processing Netflix data for top ten visualization
-  country_table <- netflix_titles %>% 
+  countryTable <- netflixTitles %>% 
     group_by(country) %>% 
     summarise(n = n()) %>% 
     filter(n >= 106) %>% 
     na.omit()
   
-  colnames(country_table) <- c("Country", "Releases")
-  country_table$Country <- as.factor(country_table$Country)
+  colnames(countryTable) <- c("Country", "Releases")
+  countryTable$Country <- as.factor(countryTable$Country)
   
-  top10 <- ggplot(data = country_table, aes(x = Country, y = Releases)) +
+  top10 <- ggplot(data = countryTable, aes(x = Country, y = Releases)) +
     geom_bar(stat = "identity", fill = "red", color = "black", alpha = 0.7)
   top10
-  top10_interactive <- ggplotly(top10)
-  output$top_ten_out <- renderPlotly(top10_interactive)
+  top10Interactive <- ggplotly(top10)
+  output$topTenOut <- renderPlotly(top10Interactive)
   
-  # Transforming the population data from wide format to long format
-  long <- melt(setDT(world_pop), id.vars = c("country"), variable.name = "year")
-  colnames(long) <- c("country", "year", "population")
-  # Creating a reactive subset of data based on user input
-  world_plot_data <- reactive({
-    long %>%
-      filter(country == input$countryName)
-  })
+  testDF <- netflixTitles %>% 
+    select(type, country, date_added) %>% 
+    filter(country == "United States")
   
+  testDF2 <- testDF %>% 
+    group_by(date_added) %>% 
+    summarise(n = n()) %>% 
+    na.omit()
+  
+  p2 <- ggplot(testDF2, aes(x = date_added, y = n)) +
+    geom_point(size = 4, alpha = 0.6) + xlab("Year") +
+    ylab("Number of Releases") + geom_smooth(method = "lm")
+  
+  output$releaseTime <- renderPlot(p2)
+
   # Creating the population table
   output$popTable <- renderDataTable({
     world_plot_data()
