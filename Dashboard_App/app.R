@@ -12,7 +12,9 @@ library(plotly)
 
 # UI
 ui <- dashboardPage(
+
   dashboardHeader(title = "Scott Schumacker"),
+  
   # Sidebar
   dashboardSidebar(
     sidebarMenu(
@@ -21,6 +23,11 @@ ui <- dashboardPage(
   ),
   # Body
   dashboardBody(
+    
+    tags$head(
+      tags$link(rel = "stylesheet", type = "text/css", href = "style.css")
+    ),
+    
     tabItems(
       tabItem(tabName = "netflix",
         # Top ten countries bar plot UI  
