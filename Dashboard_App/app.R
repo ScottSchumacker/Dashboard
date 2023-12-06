@@ -16,24 +16,22 @@ ui <- dashboardPage(
   # Sidebar
   dashboardSidebar(
     sidebarMenu(
-      menuItem("World Population", tabName = "worldPop", icon = icon("signal")),
-      menuItem("Netflix Insights", tabName = "netflix", icon = icon("signal")),
-      menuItem("Widgets", tabName = "widgets", icon = icon("th"))
+      menuItem("Netflix Insights", tabName = "netflix", icon = icon("signal"))
     )
   ),
   # Body
   dashboardBody(
     tabItems(
-      tabItem(tabName = "worldPop",
-        box(title = "Controls",
-          selectInput(inputId = "countryName", "Country",
-                      choices = long$country)
-        ),
-        box(dataTableOutput("popTable"), height = "500px")
-      ),
       tabItem(tabName = "netflix",
-        box(plotlyOutput("top_ten_out"), width = "100%", title = "Top Ten Countr
-            ies by Number of Releases (2014-2021)")
+        # Top ten countries bar plot UI  
+        box(plotlyOutput("topTenOut"), width = "100%", title = 
+              "Top Ten Countries by Number of Releases (2008-2021)"),
+        
+        # Selector for countries UI
+        uiOutput("countryChoose"),
+        
+        # Interactive point plot UI
+        box(plotlyOutput("releaseTime"), title = "Number of Release by Year")
       )
     )
   )
@@ -41,38 +39,62 @@ ui <- dashboardPage(
 
 # Server
 server <- function(input, output) {
-  # Loading in Netflix Data set
+  # Loading in Netflix Data set (add code)
+  netflixTitles <- netflix_titles3
+  # Extracting only the year
+  netflixTitles$dateadded <- substr(netflixTitles$date_added, 1, 4)
+  # Cleaning Netflix data set (add code)
   # Processing Netflix data for top ten visualization
-  country_table <- netflix_titles %>% 
+  countryTable <- netflixTitles %>% 
     group_by(country) %>% 
     summarise(n = n()) %>% 
     filter(n >= 106) %>% 
     na.omit()
   
-  colnames(country_table) <- c("Country", "Releases")
-  country_table$Country <- as.factor(country_table$Country)
+  # Renaming columns and tidying DF
+  colnames(countryTable) <- c("Country", "Releases")
+  countryTable$Country <- as.factor(countryTable$Country)
   
-  top10 <- ggplot(data = country_table, aes(x = Country, y = Releases)) +
-    geom_bar(stat = "identity", fill = "red", color = "black", alpha = 0.7)
-  top10
-  top10_interactive <- ggplotly(top10)
-  output$top_ten_out <- renderPlotly(top10_interactive)
-  
-  # Transforming the population data from wide format to long format
-  long <- melt(setDT(world_pop), id.vars = c("country"), variable.name = "year")
-  colnames(long) <- c("country", "year", "population")
-  # Creating a reactive subset of data based on user input
-  world_plot_data <- reactive({
-    long %>%
-      filter(country == input$countryName)
+  # Creating output for UI selector
+  output$countryChoose <- renderUI({
+    selectInput(
+      "countrySelect",
+      "Country",
+      countryTable$Country
+    )
   })
   
-  # Creating the population table
-  output$popTable <- renderDataTable({
-    world_plot_data()
-  }, options = list(
-    pageLength = 10
-  ))
+  # Creating plot output for top ten bar plot
+  top10 <- ggplot(data = countryTable, aes(x = Country, y = Releases)) +
+    geom_bar(stat = "identity", fill = "red", color = "black", alpha = 0.7)
+  top10
+  top10Interactive <- ggplotly(top10)
+  output$topTenOut <- renderPlotly(top10Interactive)
+  
+  # Creating DF for interactive point plot
+  testDF <- netflixTitles %>% 
+    select(type, country, date_added)
+  
+  # Tidying DF for interactive point plot
+  testDF$date_added <- as.Date(testDF$date_added)
+  testDF$date_added <- format(as.Date(testDF$date_added, 
+                                      format="%d/%m/%Y"), "%Y")
+  
+  output$releaseTime <- renderPlotly({
+    
+    testDF2 <- testDF %>% 
+      filter(country == input$countrySelect) %>% 
+      group_by(date_added) %>% 
+      summarise(n = n()) %>% 
+      na.omit()
+    
+    # Creating plot output for interactive point plot
+    p2 <- ggplot(testDF2, aes(x = date_added, y = n)) +
+      geom_point(size = 5, alpha = 0.6, color = "red") + xlab("Year") +
+      ylab("Number of Releases") + geom_smooth(method = "lm")
+    ggplotly(p2)
+  })
+
 }
 
 shinyApp(ui, server)
