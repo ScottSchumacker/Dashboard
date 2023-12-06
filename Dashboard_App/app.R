@@ -16,18 +16,21 @@ ui <- dashboardPage(
   # Sidebar
   dashboardSidebar(
     sidebarMenu(
-      menuItem("World Population", tabName = "worldPop", icon = icon("signal")),
-      menuItem("Netflix Insights", tabName = "netflix", icon = icon("signal")),
-      menuItem("Widgets", tabName = "widgets", icon = icon("th"))
+      menuItem("Netflix Insights", tabName = "netflix", icon = icon("signal"))
     )
   ),
   # Body
   dashboardBody(
     tabItems(
       tabItem(tabName = "netflix",
-        box(plotlyOutput("topTenOut"), width = "100%", title = "Top Ten Countr
-            ies by Number of Releases (2008-2021)"),
-        box(plotOutput("releaseTime"))
+        # Top ten countries bar plot UI  
+        box(plotlyOutput("topTenOut"), width = "100%", title = "Top Ten Countries by Number of Releases (2008-2021)"),
+        
+        # Selector for countries UI
+        uiOutput("countryChoose"),
+        
+        # Interactive point plot UI
+        box(plotlyOutput("releaseTime"), title = "Number of Release by Year")
       )
     )
   )
@@ -47,36 +50,49 @@ server <- function(input, output) {
     filter(n >= 106) %>% 
     na.omit()
   
+  # Renaming columns and tidying DF
   colnames(countryTable) <- c("Country", "Releases")
   countryTable$Country <- as.factor(countryTable$Country)
   
+  # Creating output for UI selector
+  output$countryChoose <- renderUI({
+    selectInput(
+      "countrySelect",
+      "Country",
+      countryTable$Country
+    )
+  })
+  
+  # Creating plot output for top ten bar plot
   top10 <- ggplot(data = countryTable, aes(x = Country, y = Releases)) +
     geom_bar(stat = "identity", fill = "red", color = "black", alpha = 0.7)
   top10
   top10Interactive <- ggplotly(top10)
   output$topTenOut <- renderPlotly(top10Interactive)
   
+  # Creating DF for interactive point plot
   testDF <- netflixTitles %>% 
-    select(type, country, date_added) %>% 
-    filter(country == "United States")
+      select(type, country, date_added)
   
-  testDF2 <- testDF %>% 
-    group_by(date_added) %>% 
-    summarise(n = n()) %>% 
-    na.omit()
+  # Tidying DF for interactive point plot
+  testDF$date_added <- as.Date(testDF$date_added)
+  testDF$date_added <- format(as.Date(testDF$date_added, format="%d/%m/%Y"),"%Y")
   
-  p2 <- ggplot(testDF2, aes(x = date_added, y = n)) +
-    geom_point(size = 4, alpha = 0.6) + xlab("Year") +
-    ylab("Number of Releases") + geom_smooth(method = "lm")
-  
-  output$releaseTime <- renderPlot(p2)
+  output$releaseTime <- renderPlotly({
+    
+    testDF2 <- testDF %>% 
+      filter(country == input$countrySelect) %>% 
+      group_by(date_added) %>% 
+      summarise(n = n()) %>% 
+      na.omit()
+    
+    # Creating plot output for interactive point plot
+    p2 <- ggplot(testDF2, aes(x = date_added, y = n)) +
+      geom_point(size = 5, alpha = 0.6, color = "red") + xlab("Year") +
+      ylab("Number of Releases") + geom_smooth(method = "lm")
+    ggplotly(p2)
+  })
 
-  # Creating the population table
-  output$popTable <- renderDataTable({
-    world_plot_data()
-  }, options = list(
-    pageLength = 10
-  ))
 }
 
 shinyApp(ui, server)
