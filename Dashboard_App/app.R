@@ -24,7 +24,8 @@ ui <- dashboardPage(
     tabItems(
       tabItem(tabName = "netflix",
         # Top ten countries bar plot UI  
-        box(plotlyOutput("topTenOut"), width = "100%", title = "Top Ten Countries by Number of Releases (2008-2021)"),
+        box(plotlyOutput("topTenOut"), width = "100%", title = 
+              "Top Ten Countries by Number of Releases (2008-2021)"),
         
         # Selector for countries UI
         uiOutput("countryChoose"),
@@ -72,11 +73,12 @@ server <- function(input, output) {
   
   # Creating DF for interactive point plot
   testDF <- netflixTitles %>% 
-      select(type, country, date_added)
+    select(type, country, date_added)
   
   # Tidying DF for interactive point plot
   testDF$date_added <- as.Date(testDF$date_added)
-  testDF$date_added <- format(as.Date(testDF$date_added, format="%d/%m/%Y"),"%Y")
+  testDF$date_added <- format(as.Date(testDF$date_added, 
+                                      format="%d/%m/%Y"), "%Y")
   
   output$releaseTime <- renderPlotly({
     
