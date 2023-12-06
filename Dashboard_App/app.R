@@ -9,6 +9,7 @@ library(dplyr)
 library(tidyr)
 library(data.table)
 library(plotly)
+library(renv)
 
 # UI
 ui <- dashboardPage(
