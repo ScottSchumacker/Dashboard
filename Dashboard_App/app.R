@@ -14,7 +14,7 @@ library(shinyalert)
 ui <- dashboardPage(
 
   # Header
-  dashboardHeader(title = "NETFLIX INSIGHTS"),
+  dashboardHeader(title = "STREAMING INSIGHTS"),
   
   # Sidebar
   dashboardSidebar(
@@ -54,14 +54,21 @@ ui <- dashboardPage(
 # Server
 server <- function(input, output) {
   
+  # Loading streaming data set
+  netflix_titles <- read_csv("netflix_titles.csv")
+  
   # Creating a modal pop up at the start
-  shinyalert("Welcome!", "Welcome to my shiny dashboard! - Scott",
+  shinyalert("Welcome!", "Welcome to my shiny dashboard!
+  
+             This dashboard helps end-users understand streaming data from
+             the popular streaming platform Netflix. Users can look at
+             streaming data across different countries. This dashboard uses a
+             data set provided by Kaggle.",
              type = "info", closeOnClickOutside = TRUE)
   
-  # Loading in Netflix Data set (add code)
   netflixTitles <- netflix_titles
   netflixTitles$dateadded <- substr(netflixTitles$date_added, 1, 4)
-  # Processing Netflix data for top ten visualization
+  # Processing streaming data for top ten visualization
   countryTable <- netflixTitles %>% 
     group_by(country) %>% 
     summarise(n = n()) %>% 
@@ -147,7 +154,7 @@ server <- function(input, output) {
   
   # Creating copy of netlifxDF for data table
   newTableDF <- netflixTitles %>% 
-    select(country, type, title, date_added, rating, director)
+    select(country, type, title, date_added, rating)
 
   output$tableUI <- renderDataTable({
     finalTableDF <- newTableDF %>% 

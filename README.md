@@ -1,2 +1,2 @@
 # Dashboard
-An R Shiny dashboard deriving insights from Netlix streaming data
+An R Shiny dashboard deriving insights from Netflix streaming data
