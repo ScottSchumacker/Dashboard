@@ -55,7 +55,8 @@ server <- function(input, output) {
   
   # Creating a modal pop up at the start
   showModal(modalDialog(
-    tags$p("Welcome to my dashboard application! Please feel free to browse around. - Scott"),
+    tags$p("Welcome to my dashboard application! 
+    Please feel free to browse around. - Scott"),
     foot = modalButton("Dimiss"),
     size = "m",
     easyClose = TRUE
@@ -100,7 +101,7 @@ server <- function(input, output) {
   # Tidying DF for interactive point plot
   pointDF$date_added <- as.Date(pointDF$date_added)
   pointDF$date_added <- format(as.Date(pointDF$date_added, 
-                                      format="%d/%m/%Y"), "%Y")
+                                       format="%d/%m/%Y"), "%Y")
   
   # Creating DF for interactive donut chart
   donutDF <- netflixTitles %>% 
@@ -114,16 +115,18 @@ server <- function(input, output) {
       na.omit()
     
     donutDF2$fraction <- donutDF2$total / sum(donutDF2$total)
-    donutDF2$ymax = cumsum(donutDF2$fraction)
-    donutDF2$ymin = c(0, head(donutDF2$ymax, n=-1))
+    donutDF2$ymax <- cumsum(donutDF2$fraction)
+    donutDF2$ymin <- c(0, head(donutDF2$ymax, n=-1))
     donutDF2$labelPosition <- (donutDF2$ymax + donutDF2$ymin) / 2
-    donutDF2$label <- paste0(donutDF2$type, "\n frequency: ", round(donutDF2$fraction, 2))
-    donutP <- ggplot(donutDF2, aes(ymax = ymax, ymin = ymin, xmax = 4, xmin = 3, fill = type)) +
+    donutDF2$label <- paste0(donutDF2$type, "\n frequency: ", 
+                             round(donutDF2$fraction, 2))
+    donutP <- ggplot(donutDF2, aes(ymax = ymax, ymin = ymin, xmax = 4, 
+                                   xmin = 3, fill = type)) +
       geom_rect() +
       geom_label(x=3.5, aes(y=labelPosition, label = label), size=6) +
       scale_fill_brewer(palette = "RdGy") +
       coord_polar(theta = "y") +
-      xlim(c(2,4)) +
+      xlim(c(2, 4)) +
       theme_void() +
       theme(legend.position = "none") +
       scale_fill_manual(values = c("red", "#f9f9f9"))
