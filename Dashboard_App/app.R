@@ -154,8 +154,17 @@ server <- function(input, output) {
   
   # Creating observent event for about button
   observeEvent(input$aboutButton, {
-    shinyalert("About", "This application was created with the following
-               primary dependencies: shiny, shinydashboard, ggplot2, dplyr",
+    shinyalert(title = "About", text = "Dashboard created by: 
+    Scott Schumacker
+    
+    Primary dependencies: 
+    shiny, shinydashboard, ggplot2, dplyr, plotly, renv, shinyalert
+    
+    Primary languages: 
+    R & CSS
+    
+    Data set: 
+    https://www.kaggle.com/datasets/shivamb/netflix-shows", 
                type = "info")
   })
   
