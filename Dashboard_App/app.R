@@ -19,7 +19,6 @@ ui <- dashboardPage(
   # Sidebar
   dashboardSidebar(
     sidebarMenu(
-      menuItem("Netflix Insights", tabName = "netflix", icon = icon("signal")),
       # Selector for countries UI
       uiOutput("countryChoose")
     )
@@ -27,26 +26,28 @@ ui <- dashboardPage(
   # Body
   dashboardBody(
     
+    # Creating a dashboard title
+    fluidRow(
+      align = "center",
+      tags$h3("Netflix Insights")
+    ),
+    
+    br(),
+    
     tags$head(
       tags$link(rel = "stylesheet", type = "text/css", href = "style.css")
     ),
-    
-    tabItems(
-      tabItem(tabName = "netflix",
-              
-        # Top ten countries bar plot UI  
-        box(plotlyOutput("topTenOut"), width = "100%", title = 
-              "Top Ten Countries by Number of Releases (2008-2021)"),
-        
-        fluidRow(
-          # Interactive point plot UI
-          box(plotlyOutput("releaseTime"), title = "Number of Release by Year"),
+    # Top ten countries bar plot UI  
+    box(plotlyOutput("topTenOut"), width = "100%", title = 
+          "Top Ten Countries by Number of Releases (2008-2021)"),
+      
+    fluidRow(
+             # Interactive point plot UI
+             box(plotlyOutput("releaseTime"), 
+                 title = "Number of Release by Year"),
           
-          # Interactive donut plot UI
-          box(plotOutput("donutUI"), title = "Type of release") 
-        )
-      )
-    )
+             # Interactive donut plot UI
+             box(plotOutput("donutUI"), title = "Type of release"))
   )
 )
 
