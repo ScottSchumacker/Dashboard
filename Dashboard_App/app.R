@@ -66,14 +66,6 @@ server <- function(input, output) {
   shinyalert("Welcome!", "Welcome to my shiny dashboard! - Scott",
              type = "info", closeOnClickOutside = TRUE)
   
-  #showModal(modalDialog(
-    #tags$p("Welcome to my dashboard application! 
-    #Please feel free to browse around. - Scott"),
-    #foot = modalButton("Dimiss"),
-    #size = "m",
-    #easyClose = TRUE
-  #))
-  
   # Loading in Netflix Data set (add code)
   netflixTitles <- netflix_titles3
   # Extracting only the year
