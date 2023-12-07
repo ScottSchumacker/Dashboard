@@ -33,15 +33,18 @@ ui <- dashboardPage(
     
     tabItems(
       tabItem(tabName = "netflix",
+              
         # Top ten countries bar plot UI  
         box(plotlyOutput("topTenOut"), width = "100%", title = 
               "Top Ten Countries by Number of Releases (2008-2021)"),
         
-        # Interactive point plot UI
-        box(plotlyOutput("releaseTime"), title = "Number of Release by Year"),
-        
-        # Interactive donut plot UI
-        box(plotOutput("donutUI"), title = "Type of release")
+        fluidRow(
+          # Interactive point plot UI
+          box(plotlyOutput("releaseTime"), title = "Number of Release by Year"),
+          
+          # Interactive donut plot UI
+          box(plotOutput("donutUI"), title = "Type of release") 
+        )
       )
     )
   )
@@ -49,6 +52,15 @@ ui <- dashboardPage(
 
 # Server
 server <- function(input, output) {
+  
+  # Creating a modal pop up at the start
+  showModal(modalDialog(
+    tags$p("Welcome to my dashboard application! Please feel free to browse around. - Scott"),
+    foot = modalButton("Dimiss"),
+    size = "m",
+    easyClose = TRUE
+  ))
+  
   # Loading in Netflix Data set (add code)
   netflixTitles <- netflix_titles3
   # Extracting only the year
@@ -69,7 +81,8 @@ server <- function(input, output) {
     selectInput(
       "countrySelect",
       "Country",
-      countryTable$Country
+      countryTable$Country,
+      selected = "United States"
     )
   })
   
