@@ -10,6 +10,7 @@ library(tidyr)
 library(data.table)
 library(plotly)
 library(renv)
+library(shinyalert)
 
 # UI
 ui <- dashboardPage(
@@ -20,7 +21,8 @@ ui <- dashboardPage(
   dashboardSidebar(
     sidebarMenu(style = "position: fixed; width: 210px;",
       # Selector for countries UI
-      uiOutput("countryChoose")
+      uiOutput("countryChoose"),
+      actionButton("aboutButton", "About", width = "180px")
     )
   ),
   # Body
@@ -61,13 +63,8 @@ ui <- dashboardPage(
 server <- function(input, output) {
   
   # Creating a modal pop up at the start
-  showModal(modalDialog(
-    tags$p("Welcome to my dashboard application! 
-    Please feel free to browse around. - Scott"),
-    foot = modalButton("Dimiss"),
-    size = "m",
-    easyClose = TRUE
-  ))
+  shinyalert("Welcome!", "Welcome to my shiny dashboard! - Scott",
+             type = "info", closeOnClickOutside = TRUE)
   
   # Loading in Netflix Data set (add code)
   netflixTitles <- netflix_titles3
@@ -163,6 +160,12 @@ server <- function(input, output) {
     finalTableDF <- newTableDF %>% 
       filter(country == input$countrySelect)
     finalTableDF
+  })
+  
+  # Creating observent event for about button
+  observeEvent(input$aboutButton, {
+    shinyalert("About", "This app was created...",
+               type = "info")
   })
   
 }
