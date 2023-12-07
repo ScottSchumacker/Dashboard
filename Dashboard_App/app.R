@@ -47,7 +47,13 @@ ui <- dashboardPage(
                  title = "Number of Release by Year"),
           
              # Interactive donut plot UI
-             box(plotOutput("donutUI"), title = "Type of release"))
+             box(plotOutput("donutUI"), title = "Type of release")),
+    
+    fluidRow(
+      # Interactive data table 
+      box(dataTableOutput("tableUI"), title = "Table of releases",
+          width = "100%")
+    )
   )
 )
 
@@ -148,7 +154,17 @@ server <- function(input, output) {
       ylab("Number of Releases") + geom_smooth(method = "lm")
     ggplotly(p2)
   })
+  
+  # Creating copy of netlifxDF for data table
+  newTableDF <- netflix_titles3 %>% 
+    select(country, type, title, date_added, rating, director)
 
+  output$tableUI <- renderDataTable({
+    finalTableDF <- newTableDF %>% 
+      filter(country == input$countrySelect)
+    finalTableDF
+  })
+  
 }
 
 shinyApp(ui, server)
