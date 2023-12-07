@@ -24,3 +24,10 @@
   background-color: red;
   color: black;
 }
+
+.homePageTitle {
+  margin: auto;
+  width: 50%;
+  border: 3px solid green;
+  padding: 10px;
+}
