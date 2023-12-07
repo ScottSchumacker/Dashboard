@@ -1,2 +1,2 @@
 # Dashboard
-An R Shiny dashboard of various data visualization
+An R Shiny dashboard deriving insights from Netflix streaming data
