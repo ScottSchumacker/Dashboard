@@ -18,7 +18,7 @@ ui <- dashboardPage(
   
   # Sidebar
   dashboardSidebar(
-    sidebarMenu(
+    sidebarMenu(style = "position: fixed; width: 210px;",
       # Selector for countries UI
       uiOutput("countryChoose")
     )
@@ -44,7 +44,7 @@ ui <- dashboardPage(
     fluidRow(
              # Interactive point plot UI
              box(plotlyOutput("releaseTime"), 
-                 title = "Number of Release by Year"),
+                 title = "Number of Releases by Year"),
           
              # Interactive donut plot UI
              box(plotOutput("donutUI"), title = "Type of release")),
