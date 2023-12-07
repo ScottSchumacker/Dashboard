@@ -6,8 +6,6 @@ library(shiny)
 library(shinydashboard)
 library(ggplot2)
 library(dplyr)
-library(tidyr)
-library(data.table)
 library(plotly)
 library(renv)
 library(shinyalert)
@@ -15,7 +13,7 @@ library(shinyalert)
 # UI
 ui <- dashboardPage(
 
-  dashboardHeader(title = "Scott Schumacker"),
+  dashboardHeader(title = "NETFLIX INSIGHTS"),
   
   # Sidebar
   dashboardSidebar(
@@ -27,14 +25,6 @@ ui <- dashboardPage(
   ),
   # Body
   dashboardBody(
-    
-    # Creating a dashboard title
-    fluidRow(
-      align = "center",
-      tags$h3("Netflix Insights")
-    ),
-    
-    br(),
     
     tags$head(
       tags$link(rel = "stylesheet", type = "text/css", href = "style.css")
@@ -164,7 +154,8 @@ server <- function(input, output) {
   
   # Creating observent event for about button
   observeEvent(input$aboutButton, {
-    shinyalert("About", "This app was created...",
+    shinyalert("About", "This application was created with the following
+               primary dependencies: shiny, shinydashboard, ggplot2, dplyr",
                type = "info")
   })
   
