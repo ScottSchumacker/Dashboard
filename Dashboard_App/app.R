@@ -13,6 +13,7 @@ library(shinyalert)
 # UI
 ui <- dashboardPage(
 
+  # Header
   dashboardHeader(title = "NETFLIX INSIGHTS"),
   
   # Sidebar
@@ -23,27 +24,28 @@ ui <- dashboardPage(
       actionButton("aboutButton", "About", width = "180px")
     )
   ),
+  
   # Body
   dashboardBody(
-    
+    # Linking CSS
     tags$head(
       tags$link(rel = "stylesheet", type = "text/css", href = "style.css")
     ),
     # Top ten countries bar plot UI  
     box(plotlyOutput("topTenOut"), width = "100%", title = 
           "Top Ten Countries by Number of Releases (2008-2021)"),
-      
+    # New row for charts
     fluidRow(
              # Interactive point plot UI
              box(plotlyOutput("releaseTime"), 
-                 title = "Number of Releases by Year"),
+                 title = paste0("Number of Releases by Year")),
           
              # Interactive donut plot UI
-             box(plotOutput("donutUI"), title = "Type of release")),
-    
+             box(plotOutput("donutUI"), title = "Type of Release")),
+    # New row for table
     fluidRow(
       # Interactive data table 
-      box(dataTableOutput("tableUI"), title = "Table of releases",
+      box(dataTableOutput("tableUI"), title = "Table of Releases",
           width = "100%")
     )
   )
@@ -57,8 +59,7 @@ server <- function(input, output) {
              type = "info", closeOnClickOutside = TRUE)
   
   # Loading in Netflix Data set (add code)
-  netflixTitles <- netflix_titles3
-  # Extracting only the year
+  netflixTitles <- netflix_titles
   netflixTitles$dateadded <- substr(netflixTitles$date_added, 1, 4)
   # Processing Netflix data for top ten visualization
   countryTable <- netflixTitles %>% 
@@ -125,6 +126,7 @@ server <- function(input, output) {
       theme(legend.position = "none") +
       scale_fill_manual(values = c("red", "#f9f9f9"))
     donutP
+    
   })
   
   output$releaseTime <- renderPlotly({
@@ -138,12 +140,13 @@ server <- function(input, output) {
     # Creating plot output for interactive point plot
     p2 <- ggplot(pointDF2, aes(x = date_added, y = n)) +
       geom_point(size = 5, alpha = 0.8, color = "red") + xlab("Year") +
-      ylab("Number of Releases") + geom_smooth(method = "lm")
+      ylab("Number of Releases") + geom_smooth(method = "lm") +
+      theme(axis.text.x = element_text(angle = 45))
     ggplotly(p2)
   })
   
   # Creating copy of netlifxDF for data table
-  newTableDF <- netflix_titles3 %>% 
+  newTableDF <- netflixTitles %>% 
     select(country, type, title, date_added, rating, director)
 
   output$tableUI <- renderDataTable({
